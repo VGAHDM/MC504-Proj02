@@ -35,7 +35,7 @@ void unload(){
 void run(){
     printf("The car is full, so the ride is about to start\n");
     printf("Hey driver, you can run, the fifth grade is not afraid to die\n");
-    Sleep(5);
+    Sleep(1500);
 }
 
 //passenger functions
@@ -62,7 +62,7 @@ void* car_func(){
         unload();
         sem_post_multiple(&unboard_sem, C);
         sem_wait(&empty_car);
-        Sleep(4);
+        Sleep(500);
     }
     return NULL;
 }
@@ -122,7 +122,7 @@ void main(){
     while(1){ //new passengers will join the queue indefinitely
         pthread_create(&passenger, NULL, passenger_func, NULL);
         queue_size++;
-        Sleep(rand()%10);
+        Sleep(rand()%5000);
     }
 
     //since the roller coaster never stops, this wont be executed, but in case we create a maximum number of rides, this will be necessary
