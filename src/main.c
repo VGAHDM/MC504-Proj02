@@ -18,9 +18,6 @@ pthread_mutex_t board_lock; //locks while the passenger boards, so they can upda
 pthread_mutex_t unboard_lock;
 pthread_mutex_t queue_lock;
 
-pthread_mutex_t board_control;
-pthread_mutex_t unboard_control;
-
 //semaphores
 sem_t board_sem; //semaphore to allow C passengers to get in
 sem_t unboard_sem; //semaphore to allow C passengers to get out
@@ -75,6 +72,20 @@ void draw_header(WINDOW *win, int state){
 			mvprintw(2,(max_col-14)/2,"%s","|  Arriving  |");
 			mvprintw(3,(max_col-14)/2,"%s","+------------+");
 			attroff(COLOR_PAIR(4));
+			break;
+        case(4):
+			attron(COLOR_PAIR(2));
+			mvprintw(1,(max_col-14)/2,"%s","+------------+");
+			mvprintw(2,(max_col-14)/2,"%s","|  Loading   |");
+			mvprintw(3,(max_col-14)/2,"%s","+------------+");
+			attroff(COLOR_PAIR(2));
+			break;
+        case(5):
+			attron(COLOR_PAIR(3));
+			mvprintw(1,(max_col-14)/2,"%s","+------------+");
+			mvprintw(2,(max_col-14)/2,"%s","|  Unloading |");
+			mvprintw(3,(max_col-14)/2,"%s","+------------+");
+			attroff(COLOR_PAIR(3));
 			break;
 		default:
 			attron(COLOR_PAIR(3));
@@ -253,6 +264,76 @@ void board(WINDOW *win, int queue, int boarders){
 	
 }
 
+void unload(WINDOW *win){
+    pthread_mutex_lock(&queue_lock);
+    queue_size--;
+    pthread_mutex_unlock(&queue_lock);
+
+	int max_row,max_col;		
+	getmaxyx(win,max_row,max_col);
+	
+	clear();
+	draw_header(win, 5);
+	
+	move(5,0);
+    waddstr_trunc(win," __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+    move(6,0);
+    waddstr_trunc(win," | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+	move(7,0);
+	waddstr_trunc(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )");
+	move(8,0);
+	waddstr_trunc(win," |_____________| |_____________| |______________/");
+	move(9,0);
+	waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+	move(10,0);
+	waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+	
+	move(10,((max_col)/2)+5);
+	waddstr_trunc(win,"|  |");
+	
+
+	draw_queue(win);
+
+	refresh();
+	usleep(1500000);
+	
+}
+
+void load(WINDOW *win){
+    pthread_mutex_lock(&queue_lock);
+    queue_size--;
+    pthread_mutex_unlock(&queue_lock);
+
+	int max_row,max_col;		
+	getmaxyx(win,max_row,max_col);
+	
+	clear();
+	draw_header(win, 4);
+	
+	move(5,0);
+    waddstr_trunc(win," __     _     _   _     _     _   _     _     __");
+    move(6,0);
+    waddstr_trunc(win," | |___| |___| | | |___| |___| | | |___| |___|  \\");
+	move(7,0);
+	waddstr_trunc(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )");
+	move(8,0);
+	waddstr_trunc(win," |_____________| |_____________| |______________/");
+	move(9,0);
+	waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+	move(10,0);
+	waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+	
+	move(10,((max_col)/2)-5);
+	waddstr_trunc(win,"|  |");
+	
+
+	draw_queue(win);
+
+	refresh();
+	usleep(1500000);
+	
+}
+
 void unboard(WINDOW *win, int unboarders){
 	int max_row,max_col;		
 	getmaxyx(win,max_row,max_col);
@@ -260,7 +341,7 @@ void unboard(WINDOW *win, int unboarders){
 	for(int i = max_col/2; i<max_col-5;i++){
 
 		clear();
-		draw_header(win, 4); 
+		draw_header(win, 6); 
 
 		move(5,0);
 		switch(unboarders){
@@ -329,8 +410,7 @@ void unboard(WINDOW *win, int unboarders){
 //threads
 void* car_func(){
     while(1){
-        /////
-        //load();
+        load(win);
         for (int i = 0; i < C; i++)
         {
             sem_post(&board_sem); //signals C passengers to get in
@@ -339,7 +419,7 @@ void* car_func(){
 
         run(win);
 
-        //unload();
+        unload(win);
         for (int i = 0; i < C; i++)
         {
             sem_post(&unboard_sem); //signals C passengers to get out
@@ -352,7 +432,7 @@ void* car_func(){
 
 
 void* passenger_func(){
-    //printf("Im queueing yeeeeees\n");
+
     sem_wait(&board_sem); //passenger must wait for the car to signal
     
     ///
