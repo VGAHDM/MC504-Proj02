@@ -27,7 +27,7 @@ sem_t empty_car; //semaphore to signal for an empty car and make passengers get 
 //animations
 WINDOW *win;
 
-void waddstr_trunc(WINDOW *win, const char *str){
+void waddstr_trunc(const char *str){
   int cur_x, max_x, dummy;
   getyx(win, dummy, cur_x);
   getmaxyx(win, dummy, max_x);
@@ -38,15 +38,15 @@ void waddstr_trunc(WINDOW *win, const char *str){
   waddstr(win, str2);
 }
 
-void negative_print(WINDOW *win, const char *str, int row, int col){
+void negative_print(const char *str, int row, int col){
 	if(strlen(str)<= (-1*col)) return;
 	char str2[strlen(str)+col];
 	sprintf(str2, "%s", str+(-1*col));
 	move(row,0);
-	waddstr_trunc(win,str2);
+	waddstr_trunc(str2);
 }
 
-void draw_header(WINDOW *win, int state){
+void draw_header(int state){
 	//state: 1 = Boarding, 2 = Leaving, 3 = Arriving, 4 = Unboarding
 	int max_row,max_col;		
 	getmaxyx(win,max_row,max_col);
@@ -98,56 +98,56 @@ void draw_header(WINDOW *win, int state){
 	attron(COLOR_PAIR(1));
 }
 
-void draw_queue(WINDOW *win){
+void draw_queue(){
 	int max_row,max_col;		
 	getmaxyx(win,max_row,max_col);
 
 	for(int i = 1; i <= queue_size-1; i++){
 			if((max_col/2 - (3*i+1)) <= 0) break;
 			move(12,(max_col/2) - (3*i+1));
-			waddstr_trunc(win," o ");
+			waddstr_trunc(" o ");
 			move(13,(max_col/2) - (3*i+1));
-			waddstr_trunc(win,"/|\\");
+			waddstr_trunc("/|\\");
 			move(14,(max_col/2) - (3*i+1));
-			waddstr_trunc(win,"/ \\");
+			waddstr_trunc("/ \\");
 	}
 	move(11,0);
 	attron(A_UNDERLINE);
-	waddstr_trunc(win,"Entrada");;
+	waddstr_trunc("Entrada");;
 	move(11,max_col-5);
-	waddstr_trunc(win,"Saida");
+	waddstr_trunc("Saida");
 	attroff(A_UNDERLINE);
 
 	move(11,(max_col)/2);
-	waddstr_trunc(win,"|");
+	waddstr_trunc("|");
 	move(12,max_col/2);
-	waddstr_trunc(win,"|");
+	waddstr_trunc("|");
 	move(13,max_col/2);
-	waddstr_trunc(win,"|");
+	waddstr_trunc("|");
 	move(14,max_col/2);
-	waddstr_trunc(win,"|");
+	waddstr_trunc("|");
 	move(15,0);
-	waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+	waddstr_trunc("__________________________________________________________________________________________________________________________________________________________________");
 	move(15,(max_col)/2);
-	waddstr_trunc(win,"|");	
+	waddstr_trunc("|");	
 }
 
-void arrive(WINDOW *win){
+void arrive(){
 	int max_row,max_col, car_len = strlen(" | |___| |___| |-| |___| |___| |-| |___| |___|   )");		
 	getmaxyx(win,max_row,max_col);
 
 	for(int i = (-1*car_len); i <= 0; i++){
 		clear();
-		draw_header(win,3);
+		draw_header(3);
 
-		negative_print(win, " __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __", 5, i);
-		negative_print(win," | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\ ", 6, i);
-		negative_print(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )", 7, i);
-		negative_print(win," |_____________| |_____________| |______________/", 8, i);
+		negative_print(" __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __", 5, i);
+		negative_print(" | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\ ", 6, i);
+		negative_print(" | |___| |___| |-| |___| |___| |-| |___| |___|   )", 7, i);
+		negative_print(" |_____________| |_____________| |______________/", 8, i);
 		move(9,0);
-		waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+		waddstr_trunc("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 		move(10,0);
-		waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+		waddstr_trunc("__________________________________________________________________________________________________________________________________________________________________");
 
 		draw_queue(win);
 
@@ -160,26 +160,26 @@ void arrive(WINDOW *win){
 }
 
 
-void run(WINDOW *win){
+void run(){
 	int max_row,max_col;
 	getmaxyx(win,max_row,max_col);
 	
 	for(int i = 0; i<max_col; i++){
 		clear();
-		draw_header(win,2);
+		draw_header(2);
 	
 		move(5,i);
-		waddstr_trunc(win," __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+		waddstr_trunc(" __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
 		move(6,i);
-		waddstr_trunc(win," | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\ ");
+		waddstr_trunc(" | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\ ");
 		move(7,i);
-		waddstr_trunc(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )");
+		waddstr_trunc(" | |___| |___| |-| |___| |___| |-| |___| |___|   )");
 		move(8,i);
-		waddstr_trunc(win," |_____________| |_____________| |______________/");
+		waddstr_trunc(" |_____________| |_____________| |______________/");
 		move(9,0);
-		waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+		waddstr_trunc("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 		move(10,0);
-		waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+		waddstr_trunc("__________________________________________________________________________________________________________________________________________________________________");
 
  		draw_queue(win);
 		
@@ -194,7 +194,7 @@ void run(WINDOW *win){
 	arrive(win);
 }
 
-void board(WINDOW *win, int queue, int boarders){
+void board(){
     pthread_mutex_lock(&queue_lock);
     queue_size--;
     pthread_mutex_unlock(&queue_lock);
@@ -203,58 +203,58 @@ void board(WINDOW *win, int queue, int boarders){
 	getmaxyx(win,max_row,max_col);
 	
 	clear();
-	draw_header(win, 1);
+	draw_header( 1);
 	
 	move(5,0);
 	switch(boarders){
 		case(0):
-			waddstr_trunc(win," __     _     _   _     _     _   _     _     __");
+			waddstr_trunc(" __     _     _   _     _     _   _     _     __");
 			move(6,0);
-			waddstr_trunc(win," | |___| |___| | | |___| |___| | | |___| |___|  \\");
+			waddstr_trunc(" | |___| |___| | | |___| |___| | | |___| |___|  \\");
 			break;
 		case(1):
-			waddstr_trunc(win," __     _     _   _     _     _   _     _ \\o/ __");
+			waddstr_trunc(" __     _     _   _     _     _   _     _ \\o/ __");
 			move(6,0);
-			waddstr_trunc(win," | |___| |___| | | |___| |___| | | |___| |_|_|  \\");
+			waddstr_trunc(" | |___| |___| | | |___| |___| | | |___| |_|_|  \\");
 			break;
 		case(2):
-			waddstr_trunc(win," __     _     _   _     _     _   _ \\o/ _ \\o/ __");
+			waddstr_trunc(" __     _     _   _     _     _   _ \\o/ _ \\o/ __");
 			move(6,0);
-			waddstr_trunc(win," | |___| |___| | | |___| |___| | | |_|_| |_|_|  \\");
+			waddstr_trunc(" | |___| |___| | | |___| |___| | | |_|_| |_|_|  \\");
 			break;
 		case(3):
-			waddstr_trunc(win," __     _     _   _     _ \\o/ _   _ \\o/ _ \\o/ __");
+			waddstr_trunc(" __     _     _   _     _ \\o/ _   _ \\o/ _ \\o/ __");
 			move(6,0);
-			waddstr_trunc(win," | |___| |___| | | |___| |_|_| | | |_|_| |_|_|  \\");
+			waddstr_trunc(" | |___| |___| | | |___| |_|_| | | |_|_| |_|_|  \\");
 			break;
 		case(4):
-			waddstr_trunc(win," __     _     _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+			waddstr_trunc(" __     _     _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
 			move(6,0);
-			waddstr_trunc(win," | |___| |___| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+			waddstr_trunc(" | |___| |___| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
 			break;
 		case(5):
-			waddstr_trunc(win," __     _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+			waddstr_trunc(" __     _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
 			move(6,0);
-			waddstr_trunc(win," | |___| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+			waddstr_trunc(" | |___| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
 			break;
 		default:
-			waddstr_trunc(win," __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+			waddstr_trunc(" __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
 			move(6,0);
-			waddstr_trunc(win," | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+			waddstr_trunc(" | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
 			break;
 	}	
 	
 	move(7,0);
-	waddstr_trunc(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )");
+	waddstr_trunc(" | |___| |___| |-| |___| |___| |-| |___| |___|   )");
 	move(8,0);
-	waddstr_trunc(win," |_____________| |_____________| |______________/");
+	waddstr_trunc(" |_____________| |_____________| |______________/");
 	move(9,0);
-	waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+	waddstr_trunc("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 	move(10,0);
-	waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+	waddstr_trunc("__________________________________________________________________________________________________________________________________________________________________");
 	
 	move(10,((max_col)/2)-5);
-	waddstr_trunc(win,"|  |");
+	waddstr_trunc("|  |");
 	
 
 	draw_queue(win);
@@ -273,30 +273,28 @@ void unload(WINDOW *win){
 	getmaxyx(win,max_row,max_col);
 	
 	clear();
-	draw_header(win, 5);
+	draw_header(5);
 	
 	move(5,0);
-    waddstr_trunc(win," __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+    waddstr_trunc(" __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
     move(6,0);
-    waddstr_trunc(win," | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+    waddstr_trunc(" | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
 	move(7,0);
-	waddstr_trunc(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )");
+	waddstr_trunc(" | |___| |___| |-| |___| |___| |-| |___| |___|   )");
 	move(8,0);
-	waddstr_trunc(win," |_____________| |_____________| |______________/");
+	waddstr_trunc(" |_____________| |_____________| |______________/");
 	move(9,0);
-	waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+	waddstr_trunc("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 	move(10,0);
-	waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+	waddstr_trunc("__________________________________________________________________________________________________________________________________________________________________");
 	
 	move(10,((max_col)/2)+5);
-	waddstr_trunc(win,"|  |");
+	waddstr_trunc("|  |");
 	
-
 	draw_queue(win);
 
 	refresh();
 	usleep(1500000);
-	
 }
 
 void load(WINDOW *win){
@@ -308,23 +306,23 @@ void load(WINDOW *win){
 	getmaxyx(win,max_row,max_col);
 	
 	clear();
-	draw_header(win, 4);
+	draw_header(4);
 	
 	move(5,0);
-    waddstr_trunc(win," __     _     _   _     _     _   _     _     __");
+    waddstr_trunc(" __     _     _   _     _     _   _     _     __");
     move(6,0);
-    waddstr_trunc(win," | |___| |___| | | |___| |___| | | |___| |___|  \\");
+    waddstr_trunc(" | |___| |___| | | |___| |___| | | |___| |___|  \\");
 	move(7,0);
-	waddstr_trunc(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )");
+	waddstr_trunc(" | |___| |___| |-| |___| |___| |-| |___| |___|   )");
 	move(8,0);
-	waddstr_trunc(win," |_____________| |_____________| |______________/");
+	waddstr_trunc(" |_____________| |_____________| |______________/");
 	move(9,0);
-	waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+	waddstr_trunc("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 	move(10,0);
-	waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+	waddstr_trunc("__________________________________________________________________________________________________________________________________________________________________");
 	
 	move(10,((max_col)/2)-5);
-	waddstr_trunc(win,"|  |");
+	waddstr_trunc("|  |");
 	
 
 	draw_queue(win);
@@ -334,73 +332,73 @@ void load(WINDOW *win){
 	
 }
 
-void unboard(WINDOW *win, int unboarders){
+void unboard(){
 	int max_row,max_col;		
 	getmaxyx(win,max_row,max_col);
 	
 	for(int i = max_col/2; i<max_col-5;i++){
 
 		clear();
-		draw_header(win, 6); 
+		draw_header(6); 
 
 		move(5,0);
 		switch(unboarders){
 			case(5):
-				waddstr_trunc(win," __     _     _   _     _     _   _     _     __");
+				waddstr_trunc(" __     _     _   _     _     _   _     _     __");
 				move(6,0);
-				waddstr_trunc(win," | |___| |___| | | |___| |___| | | |___| |___|  \\");
+				waddstr_trunc(" | |___| |___| | | |___| |___| | | |___| |___|  \\");
 				break;
 			case(4):
-				waddstr_trunc(win," __     _     _   _     _     _   _     _ \\o/ __");
+				waddstr_trunc(" __     _     _   _     _     _   _     _ \\o/ __");
 				move(6,0);
-				waddstr_trunc(win," | |___| |___| | | |___| |___| | | |___| |_|_|  \\");
+				waddstr_trunc(" | |___| |___| | | |___| |___| | | |___| |_|_|  \\");
 				break;
 			case(3):
-				waddstr_trunc(win," __     _     _   _     _     _   _ \\o/ _ \\o/ __");
+				waddstr_trunc(" __     _     _   _     _     _   _ \\o/ _ \\o/ __");
 				move(6,0);
-				waddstr_trunc(win," | |___| |___| | | |___| |___| | | |_|_| |_|_|  \\");
+				waddstr_trunc(" | |___| |___| | | |___| |___| | | |_|_| |_|_|  \\");
 				break;
 			case(2):
-				waddstr_trunc(win," __     _     _   _     _ \\o/ _   _ \\o/ _ \\o/ __");
+				waddstr_trunc(" __     _     _   _     _ \\o/ _   _ \\o/ _ \\o/ __");
 				move(6,0);
-				waddstr_trunc(win," | |___| |___| | | |___| |_|_| | | |_|_| |_|_|  \\");
+				waddstr_trunc(" | |___| |___| | | |___| |_|_| | | |_|_| |_|_|  \\");
 				break;
 			case(1):
-				waddstr_trunc(win," __     _     _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+				waddstr_trunc(" __     _     _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
 				move(6,0);
-				waddstr_trunc(win," | |___| |___| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+				waddstr_trunc(" | |___| |___| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
 				break;
 			case(0):
-				waddstr_trunc(win," __     _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+				waddstr_trunc(" __     _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
 				move(6,0);
-				waddstr_trunc(win," | |___| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+				waddstr_trunc(" | |___| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
 				break;
 			default:
-				waddstr_trunc(win," __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
+				waddstr_trunc(" __ \\o/ _ \\o/ _   _ \\o/ _ \\o/ _   _ \\o/ _ \\o/ __");
 				move(6,0);
-				waddstr_trunc(win," | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
+				waddstr_trunc(" | |_|_| |_|_| | | |_|_| |_|_| | | |_|_| |_|_|  \\");
 				break;
 		}	
 		
 		move(7,0);
-		waddstr_trunc(win," | |___| |___| |-| |___| |___| |-| |___| |___|   )");
+		waddstr_trunc(" | |___| |___| |-| |___| |___| |-| |___| |___|   )");
 		move(8,0);
-		waddstr_trunc(win," |_____________| |_____________| |______________/");
+		waddstr_trunc(" |_____________| |_____________| |______________/");
 		move(9,0);
-		waddstr_trunc(win,"----------------------------------------------------------------------------------------------------------------------------------------------------------");
+		waddstr_trunc("----------------------------------------------------------------------------------------------------------------------------------------------------------");
 		move(10,0);
-		waddstr_trunc(win,"__________________________________________________________________________________________________________________________________________________________________");
+		waddstr_trunc("__________________________________________________________________________________________________________________________________________________________________");
 		move(10,((max_col)/2)+5);
-		waddstr_trunc(win,"|  |");
+		waddstr_trunc("|  |");
 
 		draw_queue(win);
 
 		move(12,i+5);
-		waddstr_trunc(win," o ");
+		waddstr_trunc(" o ");
 		move(13,i+5);
-		waddstr_trunc(win,"/|\\");
+		waddstr_trunc("/|\\");
 		move(14,i+5);
-		waddstr_trunc(win,"/ \\");
+		waddstr_trunc("/ \\");
 
 		refresh();
 		usleep(20000);
@@ -437,7 +435,7 @@ void* passenger_func(){
     
     ///
     pthread_mutex_lock(&board_lock);
-    board(win,queue_size,boarders);
+    board();
     boarders++;
     if(boarders==C){
         sem_post(&full_car);
@@ -449,7 +447,7 @@ void* passenger_func(){
     sem_wait(&unboard_sem); //passenger must wait for ride to be over
     //
     pthread_mutex_lock(&unboard_lock);
-    unboard(win,unboarders);
+    unboard();
     unboarders++;
     if (unboarders == C){
         sem_post(&empty_car);
